@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Independence Day, Nigeria</title>
+<style>
+:root{--bg:#f6faf6;--ink:#0b3d22;--soft:#3d6350;--green:#008751;--card:#ffffff;--line:#cfe3d6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#06180f;--ink:#eaf6ee;--soft:#a9c9b6;--green:#1fbf7a;--card:#0d2619;--line:#1c4531}}
+:root[data-theme="dark"]{--bg:#06180f;--ink:#eaf6ee;--soft:#a9c9b6;--green:#1fbf7a;--card:#0d2619;--line:#1c4531}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;display:flex;justify-content:center;overflow-x:hidden}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+main{position:relative;z-index:1;width:100%;max-width:30rem;padding:2rem 1.5rem 3rem;text-align:center}
+.pole{display:flex;justify-content:center;margin:1rem 0 2rem;perspective:600px}
+.flag{width:15rem;height:10rem;border-radius:3px;background:linear-gradient(90deg,#008751 0 33.33%,#fff 33.33% 66.66%,#008751 66.66% 100%);
+box-shadow:0 10px 30px rgba(0,60,30,.25);position:relative;transform-origin:left center;animation:wave 3.6s ease-in-out infinite}
+.flag::after{content:"";position:absolute;inset:0;border-radius:3px;background:linear-gradient(100deg,rgba(0,0,0,.18),rgba(255,255,255,.22) 25%,rgba(0,0,0,.16) 50%,rgba(255,255,255,.2) 75%,rgba(0,0,0,.14));background-size:200% 100%;animation:sheen 3.6s linear infinite}
+@keyframes wave{0%,100%{transform:rotateY(-10deg) skewY(-1.5deg)}50%{transform:rotateY(8deg) skewY(1.5deg)}}
+@keyframes sheen{to{background-position:-200% 0}}
+h1{font-size:clamp(2rem,9vw,2.9rem);line-height:1.1;margin:0 0 1.5rem;font-weight:700;letter-spacing:-.01em}
+.msg p{font-size:1.1rem;line-height:1.65;color:var(--soft);margin:.4rem auto;max-width:26rem;opacity:0;transform:translateY(8px);transition:opacity .9s,transform .9s}
+.msg p.show{opacity:1;transform:none}
+.card{margin-top:2rem;padding:1.4rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:14px}
+label{display:block;font-size:1rem;margin-bottom:.7rem;color:var(--soft)}
+input{width:100%;font:inherit;font-size:1.05rem;padding:.8rem 1rem;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus,button:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+button{margin-top:.9rem;width:100%;font:inherit;font-weight:700;font-size:1.05rem;padding:.85rem 1rem;border:0;border-radius:10px;background:var(--green);color:#fff;cursor:pointer}
+button:active{transform:scale(.98)}
+#out{min-height:2.2rem;margin-top:1.1rem;font-size:1.35rem;font-weight:700;color:var(--green)}
+@media (prefers-reduced-motion:reduce){.flag,.flag::after{animation:none}.msg p{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<main>
+  <div class="pole"><div class="flag" role="img" aria-label="Flag of Nigeria"></div></div>
+  <h1>Happy 66th Independence Day, Nigeria 🇳🇬</h1>
+  <div class="msg">
+    <p>On this first of October, we remember how far we have come.</p>
+    <p>May your home be peaceful, your work be rewarded, and your hope stay strong.</p>
+    <p>Let's keep believing in Nigeria and building it together.</p>
+  </div>
+  <div class="card">
+    <label for="n">Type your name to get your greeting</label>
+    <input id="n" type="text" placeholder="Your name" autocomplete="given-name" maxlength="30">
+    <button id="b" type="button">Show my greeting</button>
+    <div id="out" aria-live="polite"></div>
+  </div>
+</main>
+<script>
+(function(){
+var cv=document.getElementById('c'),ctx=cv.getContext('2d'),P=[],W,H,
+cols=['#008751','#19b36b','#ffffff','#e8c15a','#7fd6a8'],
+still=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+size();addEventListener('resize',size);
+function add(x,y,burst){
+  var a=burst?Math.random()*Math.PI*2:0,s=burst?3+Math.random()*7:0;
+  P.push({x:x,y:y,vx:burst?Math.cos(a)*s:(Math.random()-.5)*.8,vy:burst?Math.sin(a)*s-4:1+Math.random()*1.6,
+  w:5+Math.random()*6,h:8+Math.random()*8,r:Math.random()*6,vr:(Math.random()-.5)*.25,c:cols[Math.random()*cols.length|0],g:burst?.18:.01,life:burst?140:9999});
+}
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  if(!still&&P.length<70&&Math.random()<.25)add(Math.random()*W,-12,false);
+  for(var i=P.length-1;i>=0;i--){
+    var p=P[i];p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.life--;
+    if(p.g>.1)p.vx*=.985;
+    if(p.y>H+20||p.life<=0){P.splice(i,1);continue}
+    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);
+    ctx.fillStyle=p.c;ctx.globalAlpha=p.life<30?p.life/30:1;
+    ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    if(p.c==='#ffffff'){ctx.strokeStyle='rgba(0,135,81,.5)';ctx.strokeRect(-p.w/2,-p.h/2,p.w,p.h)}
+    ctx.restore();
+  }
+  requestAnimationFrame(loop);
+}
+loop();
+var lines=document.querySelectorAll('.msg p');
+lines.forEach(function(l,i){setTimeout(function(){l.classList.add('show')},still?0:600+i*1100)});
+var inp=document.getElementById('n'),out=document.getElementById('out');
+function greet(){
+  var name=inp.value.trim().replace(/\s+/g,' ');
+  out.textContent=name?'Happy Independence Day, '+name+'! 🇳🇬':'Happy Independence Day! 🇳🇬';
+  var r=inp.getBoundingClientRect();
+  for(var i=0;i<110;i++)add(W/2,Math.max(r.bottom,H*.45),true);
+}
+document.getElementById('b').addEventListener('click',greet);
+inp.addEventListener('keydown',function(e){if(e.key==='Enter')greet()});
+})();
+</script>
+</body>
+</html>
